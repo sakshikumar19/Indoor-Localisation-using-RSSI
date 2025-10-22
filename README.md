@@ -8,7 +8,7 @@ A machine learning-based indoor localization system using RSSI (Received Signal 
 
 ## Problem Statement
 
-GPS doesn't work indoors. We solve this by placing 4 Bluetooth transmitters in corners of a lab and using their signal strengths to determine which partition (zone) a device is in.
+GPS doesn't work indoors. We solve this by placing 4 LoRa transmitters in corners of a lab and using their signal strengths to determine which partition (zone) a device is in.
 
 ---
 
