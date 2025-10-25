@@ -1,41 +1,41 @@
-# Indoor Localization System
+# Localisation of Receiver Using RSSI of LoRa Signals
 
-### CSO 332 Project
-
-A machine learning-based indoor localization system using RSSI (Received Signal Strength Indicator) values from multiple transmitters to predict location partitions.
+**CSO 332 Project**
 
 ---
 
-## Problem Statement
+## 1. Overview
 
-GPS doesn't work indoors. We solve this by placing 4 LoRa transmitters in corners of a lab and using their signal strengths to determine which partition (zone) a device is in.
+Indoor navigation is tricky because GPS signals fade once you step inside a building. This project builds an **indoor localization system** that uses **LoRa-based Received Signal Strength Indicator (RSSI)** values to predict which **partition** the receiver is currently located in.
+
+In simple terms: we placed four LoRa transmitters at the corners of a lab, collected their signal strengths across different partitions and trained machine learning models to estimate the receiver’s location.
 
 ---
 
-## Hardware Setup & Data Collection
+## 2. Hardware & Setup
 
-- **Transmitter Modules**: 4 LoRa nodes (TX_04, TX_74, TX_03, TX_76) placed in the corners of the lab.
-- **Receiver Module**: LilyGO ESP32 with LoRa module, mobile unit used to collect RSSI signals.
-- **Power Supply**: USB or battery packs for transmitters and ESP32.
-- **Data Logging**: Receiver connected to a laptop via USB to log RSSI values.
+- **Transmitter Modules:** 4 LoRa nodes (TX_04, TX_74, TX_03, TX_76; where each ID represents a unique transmitter)
+- **Receiver:** LilyGO ESP32 LoRa32 module
+- **Power Supply:** USB or portable battery
+- **Programming Environment:** Arduino IDE for hardware, Python for data analysis and ML
 
-**Data Collection Procedure**:
+### Data Collection Procedure
 
-1. Lab divided into 4 partitions (P1–P4).
-2. Receiver placed at multiple positions within each partition.
-3. ESP32 recorded RSSI values from all 4 transmitters over time.
-4. Each sample saved as:
+1. The lab was divided into four partitions.
+
+2. The receiver was moved to different points within each partition.
+
+3. At every point, RSSI values from all four transmitters were recorded.
+
+4. Each reading was stored as a row in CSV format:
 
    ```
-   TX_04, TX_74, TX_03, TX_76, Partition
+   X, Y, TX_04, TX_74, TX_03, TX_76, Partition
    ```
 
-5. Total samples collected: ~350 (≈ 80–90 per partition).
+5. **350 samples** were collected (≈ 80–90 per partition).
 
-Below is the floorplan used during data collection:
-![Lab Floorplan](images/lab_floorplan.png)
-
-**Transmitter Configuration**:
+**Transmitter Parameters:**
 
 | Parameter        | Value   |
 | ---------------- | ------- |
@@ -46,88 +46,93 @@ Below is the floorplan used during data collection:
 
 ---
 
-## Dataset
+## 3. Dataset
 
-- **350 data points** collected across a lab divided into 4 partitions
-- **4 transmitters**: TX_04, TX_74, TX_03, TX_76 (placed in corners)
-- **Features**: RSSI values (in dBm) from each transmitter
-- **Target**: Partition number (1-4)
+- **Total Samples:** 350
+- **Features:** RSSI values (in dBm) from 4 transmitters
+- **Target:** Partition label (1–4)
 
 ---
 
-## Methodology
+## 4. Methodology
 
-### 1. Feature Engineering
+### Step 1: Feature Engineering
 
-Derived features that capture spatial patterns:
+To make the model more spatially aware, we generated derived features such as:
 
-- Signal ratios between transmitters (dominance patterns)
-- Signal differences (which TX is stronger?)
-- Statistical aggregates (mean, std, range)
+- Differences between RSSI values, giving gradient of signal strength.
+- Aggregate statistics like mean, standard deviation and range, to capture overall signal conditions.
+- Ratios between RSSI values, signalling dominance indicators (which transmitter is strongest)
 
-### 2. Models Tested
+### Step 2: Model Training
 
+The following algorithms were trained and compared:
+
+- K-Nearest Neighbors (KNN)
 - Random Forest
 - Gradient Boosting
 - Support Vector Machine (SVM)
-- K-Nearest Neighbors (KNN)
 - Neural Network
 - Ensemble (Voting Classifier)
 
-_All models optimized using GridSearchCV hyperparameter tuning._
+Each model was tuned using **GridSearchCV** for hyperparameter optimization.
 
-### 3. Results
-
-- **Accuracy**: 70-75% (varies by model)
-- **Best Features**: Signal ratios and differences outperform raw RSSI
-- **Fastest Model**: Ensemble
+### Step 3: Evaluation
 
 | Model                 | Test Accuracy |
 | --------------------- | ------------- |
 | **Ensemble**          | 75.71%        |
 | **KNN**               | 74.29%        |
+| **Gradient Boosting** | 73.71%        |
 | **Random Forest**     | 72.86%        |
-| **Gradient Boosting** | 72.86%        |
-| **SVM**               | 72.86%        |
 | **Neural Network**    | 71.43%        |
+| **SVM**               | 71.14%        |
+
+Average accuracy ranged between **70–75%**, depending on signal stability and feature set.
 
 ---
 
-## Usage
+## 5. Usage
 
-### Prerequisites
+### Install Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run Analysis
+### Run the Notebook
 
-Run the cells one-by-one or all at once. The script will:
+Running the Jupyter notebook will:
 
-1. Perform exploratory data analysis
-2. Engineer features and analyze patterns
-3. Train and optimize multiple ML models
-4. Compare performance and recommend best model
-5. Provide scaling strategies for larger spaces
-
----
-
-## Key Insights
-
-- **Signal dominance patterns** are key - each partition is closest to a different transmitter
-- **Feature engineering** significantly improves accuracy over raw RSSI
-- **Ensemble methods** provide best accuracy with minimal overfitting
-- **Model is lightweight** - suitable for real-time mobile deployment
+1. Load and preprocess the dataset
+2. Perform feature engineering
+3. Train and evaluate ML models
+4. Display accuracy metrics and confusion matrices
+5. Recommend the best-performing model
 
 ---
 
-## Scaling to Larger Spaces
+## 6. Key Observations
 
-| Space Size | Transmitters | Partitions | Expected Accuracy |
-| ---------- | ------------ | ---------- | ----------------- |
-| Small lab  | 4            | 4          | 70-75%            |
-| Office     | 6            | 9          | 65-70%            |
-| Warehouse  | 8-10         | 16         | 60-65%            |
+- **Signal dominance patterns** were strong indicators of partition.
+- **Feature engineering** improved accuracy compared to raw RSSI input.
+- **Ensemble methods** balanced accuracy and stability.
+- **System is lightweight** and can be extended for real-time localization.
 
-**Rule of thumb**: ~1 transmitter per 100m², 50-100 samples per partition
+---
+
+## 7. Scalability
+
+| Environment  | Transmitters | Partitions | Expected Accuracy |
+| ------------ | ------------ | ---------- | ----------------- |
+| Small Lab    | 4            | 4          | 70–75%            |
+| Hostel       | 6            | 9          | 65–70%            |
+| Office Space | 8–10         | 16         | 60–65%            |
+
+Try to collect at least 50–100 labeled samples per partition for stable results.
+
+---
+
+## 8. Conclusion
+
+This project demonstrates an approach to indoor localization using LoRa and machine learning. While the accuracy can vary with noise and obstacles, results show that combining **RSSI-based features** with **ensemble learning** gives us a good baseline for indoor positioning.

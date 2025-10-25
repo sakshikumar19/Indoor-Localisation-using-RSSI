@@ -3,8 +3,8 @@
     "Ensemble": 0.7571,
     "KNN": 0.7429,
     "Random Forest": 0.7286,
-    "Gradient Boosting": 0.7286,
-    "SVM": 0.7286,
+    "Gradient Boosting": 0.7371,
+    "SVM": 0.7114,
     "Neural Network": 0.7143
   }
 }
