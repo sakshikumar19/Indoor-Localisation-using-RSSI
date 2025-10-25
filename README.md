@@ -23,17 +23,19 @@ In simple terms: we placed four LoRa transmitters at the corners of a lab, colle
 
 1. The lab was divided into four partitions.
 
-2. The receiver was moved to different points within each partition.
+2. The receiver was placed 45 cm above the floor, while the four LoRa transmitters were mounted uniformly at the corners of the lab, each positioned 225 cm above the floor.
 
-3. At every point, RSSI values from all four transmitters were recorded.
+3. The receiver was moved to different points within each partition.
 
-4. Each reading was stored as a row in CSV format:
+4. At every point, RSSI values from all four transmitters were recorded.
+
+5. Each reading was stored as a row in CSV format:
 
    ```
    X, Y, TX_04, TX_74, TX_03, TX_76, Partition
    ```
 
-5. **350 samples** were collected (≈ 80–90 per partition).
+6. **350 samples** were collected (≈ 80–90 per partition).
 
 **Transmitter Parameters:**
 
